@@ -8,7 +8,7 @@ import (
 )
 
 type Allocation struct {
-	ID        string
+	ID        int
 	UserId    string
 	Name      string
 	Share     int

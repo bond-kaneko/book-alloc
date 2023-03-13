@@ -12,6 +12,7 @@ func main() {
 	{
 		v1.User(routes)
 		v1.Allocation(routes)
+		v1.ReadingHistory(routes)
 	}
 
 	g.Run()
