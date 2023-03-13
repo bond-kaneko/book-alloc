@@ -1,9 +1,17 @@
-package book_alloc
+package main
 
 import (
-	log "github.com/sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	log.Infof("Start book-alloc")
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "レスポンス",
+		})
+	})
+
+	r.Run()
+
 }
