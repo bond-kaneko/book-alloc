@@ -11,3 +11,10 @@ https://lucid.app/lucidchart/b1eb7f71-a833-4fca-9364-c45dcceb49c9/edit?viewport_
 
 参考
 https://blog.devgenius.io/golang-apis-a-skeleton-for-your-future-projects-a082dc4d6818
+
+# localでのテストログイン
+
+```
+curl -c /tmp/cookie.txt -X POST -d '{"email": "test@example.com", "password": "password"}' localhost:8888/login
+curl -b /tmp/cookie.txt localhost:8888/v1/users 
+```
