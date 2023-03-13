@@ -49,8 +49,8 @@ create table reading_histories
     status        smallint  not null,
     times         integer   not null,
     start_at      timestamp not null,
-    end_at        timestamp not null,
-    rating        smallint  not null,
+    end_at        timestamp,
+    rating        smallint,
     comment       text,
     created_at    timestamp not null,
     updated_at    timestamp not null

@@ -11,6 +11,7 @@ func main() {
 	routes := g.Group("/v1")
 	{
 		v1.User(routes)
+		v1.Allocation(routes)
 	}
 
 	g.Run()
