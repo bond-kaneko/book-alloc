@@ -1,17 +1,17 @@
 package main
 
 import (
+	"book-alloc/user"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "レスポンス",
-		})
-	})
+	g := gin.Default()
 
-	r.Run()
+	routes := g.Group("/v1")
+	{
+		user.Route(routes)
+	}
 
+	g.Run()
 }
