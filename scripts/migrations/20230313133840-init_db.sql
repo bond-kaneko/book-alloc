@@ -13,7 +13,7 @@ create table users
         constraint users_uk
             unique,
     password     text        not null,
-    registerd_at timestamp   not null,
+    registered_at timestamp   not null,
     created_at   timestamp,
     updated_at   timestamp
 );

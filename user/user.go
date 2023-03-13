@@ -3,14 +3,18 @@ package user
 import (
 	"book-alloc/db"
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 type User struct {
-	id   string `db:"id"`
-	name string `db:"name"`
+	ID         string
+	Name       string
+	Email      string
+	RegisterAt time.Time
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type Repository interface {
@@ -18,9 +22,8 @@ type Repository interface {
 }
 
 func GetAll(c *gin.Context) {
-	db, err := db.NewDB()
-	fmt.Println(err)
-	var u []User
-	_ = db.Find(&u)
-	c.JSON(http.StatusOK, u)
+	db, _ := db.NewDB()
+	var users []User
+	_ = db.Find(&users)
+	c.JSON(http.StatusOK, users)
 }
