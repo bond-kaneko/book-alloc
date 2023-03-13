@@ -1,7 +1,7 @@
 package main
 
 import (
-	"book-alloc/user"
+	"book-alloc/api/v1"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +10,7 @@ func main() {
 
 	routes := g.Group("/v1")
 	{
-		user.Route(routes)
+		v1.User(routes)
 	}
 
 	g.Run()
