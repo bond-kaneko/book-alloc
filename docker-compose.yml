@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  app:
+    container_name: book_alloc_app
+    build:
+      context: .
+      dockerfile: dockerfile/app/Dockerfile
+    tty: true
+    depends_on:
+      db:
+        condition: service_healthy
+    command: make dev
+    volumes:
+      - ./:/src
+    environment:
+      CONFIG_PATH: /src/config/environments/local/config.yml
+      TZ: Asia/Tokyo
+    working_dir: /src
+    ports:
+      - "8888:8080"
+
+  db:
+    container_name: book_alloc_db
+    image: postgres:15.2
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=book_alloc
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: "pg_isready -U user -d book_alloc || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 5
