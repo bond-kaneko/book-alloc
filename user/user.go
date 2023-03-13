@@ -3,6 +3,7 @@ package user
 import (
 	"book-alloc/db"
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -17,6 +18,9 @@ type Repository interface {
 }
 
 func GetAll(c *gin.Context) {
-	db := db.NewDB()
-	c.JSON(http.StatusOK, "get all")
+	db, err := db.NewDB()
+	fmt.Println(err)
+	var u []User
+	_ = db.Find(&u)
+	c.JSON(http.StatusOK, u)
 }
