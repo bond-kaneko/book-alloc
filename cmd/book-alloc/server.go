@@ -35,7 +35,6 @@ func main() {
 	})
 
 	auth := g.Group("/auth")
-	// Refresh time can be longer than token timeout
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{

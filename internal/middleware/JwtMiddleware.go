@@ -4,6 +4,7 @@ import (
 	"book-alloc/internal/user"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -36,26 +37,25 @@ func NewJwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals login
-			if err := c.ShouldBind(&loginVals); err != nil {
-				return "", jwt.ErrMissingLoginValues
-			}
-			email := loginVals.Email
-			password := loginVals.Password
-
-			if email == "admin@example.com" && password == "admin" {
-				return &user.User{
-					Email: email,
-				}, nil
+			var loginParams login
+			if err := c.ShouldBind(&loginParams); err != nil {
+				return nil, jwt.ErrMissingLoginValues
 			}
 
-			return nil, jwt.ErrFailedAuthentication
+			u, err := user.GetByEmail(c, loginParams.Email)
+			if err != nil {
+				return nil, jwt.ErrFailedAuthentication
+			}
+
+			err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(loginParams.Password))
+			if err != nil {
+				return nil, jwt.ErrFailedAuthentication
+			}
+
+			return u, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*user.User); ok && v.Email == "admin@example.com" {
-				return true
-			}
-			return false
+			return true
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{

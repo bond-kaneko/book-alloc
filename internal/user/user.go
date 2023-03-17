@@ -23,3 +23,12 @@ func GetAll(c *gin.Context) {
 	_ = db.Find(&users)
 	c.JSON(http.StatusOK, users)
 }
+
+func GetByEmail(c *gin.Context, email string) (User, error) {
+	db, _ := db.NewDB()
+
+	var user User
+	result := db.First(&user, "email = ?", email)
+
+	return user, result.Error
+}
