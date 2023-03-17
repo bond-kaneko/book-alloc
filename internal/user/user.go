@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const IdentityKey = "email"
+
 type User struct {
 	ID         string
 	Name       string

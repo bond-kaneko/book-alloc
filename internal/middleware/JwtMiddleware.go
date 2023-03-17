@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-const IdentityKey = "email"
-
 type login struct {
 	Email    string `form:"email" json:"email" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
@@ -21,11 +19,11 @@ func NewJwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		Key:         []byte("secret key"),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
-		IdentityKey: IdentityKey,
+		IdentityKey: user.IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*user.User); ok {
 				return jwt.MapClaims{
-					IdentityKey: v.Email,
+					user.IdentityKey: v.Email,
 				}
 			}
 			return jwt.MapClaims{}
@@ -33,7 +31,7 @@ func NewJwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &user.User{
-				Email: claims[IdentityKey].(string),
+				Email: claims[user.IdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -52,10 +50,7 @@ func NewJwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 				return nil, jwt.ErrFailedAuthentication
 			}
 
-			return u, nil
-		},
-		Authorizator: func(data interface{}, c *gin.Context) bool {
-			return true
+			return &u, nil
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{

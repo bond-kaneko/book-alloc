@@ -1,14 +1,14 @@
 package v1
 
 import (
+	"book-alloc/api/v1/handler"
 	"book-alloc/internal/allocation"
 	"book-alloc/internal/reading_history"
-	"book-alloc/internal/user"
 	"github.com/gin-gonic/gin"
 )
 
 func User(r *gin.RouterGroup) {
-	r.GET("/users", user.GetAll)
+	r.GET("/users", handler.LoginUserHandler)
 }
 
 func Allocation(r *gin.RouterGroup) {
