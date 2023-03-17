@@ -33,3 +33,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  web:
+    image: node:19.7.0
+    tty: true
+    volumes:
+      - ../book-alloc-web:/src
+
+    environment:
+      HOST: 0.0.0.0
+    working_dir: /src
+    command: sh -c "yarn && yarn dev"
+    ports:
+      - '3333:3000'
