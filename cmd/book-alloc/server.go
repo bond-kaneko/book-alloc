@@ -38,11 +38,11 @@ func main() {
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
-		auth.GET("/hello", helloHandler)
-
-		v1.User(auth)
-		v1.Allocation(auth)
-		v1.ReadingHistory(auth)
+		route := auth.Group("/v1")
+		route.GET("/hello", helloHandler)
+		v1.User(route)
+		v1.Allocation(route)
+		v1.ReadingHistory(route)
 	}
 
 	g.Run()
