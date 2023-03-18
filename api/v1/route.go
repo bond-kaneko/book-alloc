@@ -8,7 +8,7 @@ import (
 )
 
 func User(r *gin.RouterGroup) {
-	r.GET("/users", handler.LoginUserHandler)
+	r.GET("/users/me", handler.LoginUserHandler)
 }
 
 func Allocation(r *gin.RouterGroup) {
