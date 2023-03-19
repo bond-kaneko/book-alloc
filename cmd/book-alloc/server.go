@@ -2,11 +2,11 @@ package main
 
 import (
 	"book-alloc/middleware"
-	"fmt"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -21,6 +21,11 @@ func main() {
 	// This route is always accessible.
 	router.Handle("/api/public", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Access-Control-Allow-Origin, Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"message":"Hello from a public endpoint! You don't need to be authenticated to see this."}`))
 	}))
@@ -28,21 +33,28 @@ func main() {
 	// This route is only accessible if the user has a valid access_token.
 	router.Handle("/api/private", middleware.EnsureValidToken()(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fmt.Println("private")
-
 			// CORS Headers.
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-
-			w.Header().Set("Content-Type", "application/json")
+			//w.Header().Set("Access-Control-Allow-Credentials", "true")
+			//w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+			//w.Header().Set("Access-Control-Allow-Headers", "Authorization, Access-Control-Allow-Origin, Content-Type")
+			//w.Header().Set("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+			//w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"message":"Hello from a private endpoint! You need to be authenticated to see this."}`))
 		}),
 	))
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization"},
+		AllowCredentials: true,
+		Debug:            true,
+	})
+
+	handler := c.Handler(router)
 	log.Print("Server listening on http://localhost:8888")
-	if err := http.ListenAndServe("0.0.0.0:8080", router); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:8080", handler); err != nil {
 		log.Fatalf("There was an error with the http server: %v", err)
 	}
 

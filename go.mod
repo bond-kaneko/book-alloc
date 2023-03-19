@@ -6,9 +6,11 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.9.1
 	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
+	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.0
 	github.com/joho/godotenv v1.5.1
+	github.com/rs/cors v1.8.3
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/crypto v0.6.0
 	gorm.io/driver/postgres v1.5.0
@@ -18,7 +20,6 @@ require (
 require (
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect

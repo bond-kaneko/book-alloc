@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -50,6 +52,8 @@ func EnsureValidToken() func(next http.Handler) http.Handler {
 	}
 
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
+		s, _ := json.Marshal(r.Header)
+		fmt.Println(string(s))
 		log.Printf("Encountered error while validating JWT: %v", err)
 
 		w.Header().Set("Content-Type", "application/json")
