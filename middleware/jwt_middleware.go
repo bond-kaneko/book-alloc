@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"net/url"
@@ -24,6 +25,13 @@ type CustomClaims struct {
 // it to satisfy validator.CustomClaims interface.
 func (c CustomClaims) Validate(ctx context.Context) error {
 	return nil
+}
+
+func JwtHandler() gin.HandlerFunc {
+	h := EnsureValidToken()(nil)
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
 // EnsureValidToken is a middleware that will check the validity of our JWT.
