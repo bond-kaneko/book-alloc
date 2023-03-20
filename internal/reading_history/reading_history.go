@@ -2,8 +2,6 @@ package reading_history
 
 import (
 	"book-alloc/db"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"time"
 )
 
@@ -22,9 +20,9 @@ type ReadingHistory struct {
 	UpdatedAt    time.Time
 }
 
-func GetAll(c *gin.Context) {
+func GetAll() []ReadingHistory {
 	db, _ := db.NewDB()
 	var readingHistories []ReadingHistory
 	_ = db.Find(&readingHistories)
-	c.JSON(http.StatusOK, readingHistories)
+	return readingHistories
 }

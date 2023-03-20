@@ -2,8 +2,10 @@ package db
 
 import (
 	"database/sql/driver"
+	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
 	"time"
 )
 
@@ -12,7 +14,7 @@ type Context struct {
 }
 
 func NewDB() (*gorm.DB, error) {
-	dsn := "host=db user=user password=password dbname=book_alloc port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Tokyo", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 	return gorm.Open(postgres.Open(dsn), &gorm.Config{})
 }
 

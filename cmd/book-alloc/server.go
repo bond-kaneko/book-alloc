@@ -1,6 +1,7 @@
 package main
 
 import (
+	"book-alloc/internal/reading_history"
 	"book-alloc/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -8,18 +9,23 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
+	env := os.Getenv("ENV")
+	if "" == env {
+		env = "local"
+	}
+	if err := godotenv.Load(".env." + env); err != nil {
 		log.Fatalf("Error loading the .env file: %v", err)
 	}
 
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     []string{os.Getenv("ORIGIN_SELF")},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -34,7 +40,8 @@ func main() {
 
 	auth := r.Group("/auth", adapter.Wrap(middleware.EnsureValidToken()))
 	auth.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
+		rh := reading_history.GetAll()
+		c.JSON(http.StatusOK, gin.H{"message": "pong", "reading_histories": rh})
 	})
 
 	r.Run()
