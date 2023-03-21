@@ -8,6 +8,8 @@ import (
 type User struct {
 	ID         string
 	Auth0Id    string
+	Email      string
+	Name       string
 	RegisterAt time.Time
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
