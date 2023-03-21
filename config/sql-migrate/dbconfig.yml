@@ -2,3 +2,8 @@ local:
   dialect: postgres
   datasource: host=db user=user dbname=book_alloc password=password sslmode=disable
   dir: scripts/migrations
+
+test:
+  dialect: postgres
+  datasource: host=test_db user=user dbname=book_alloc_test password=password sslmode=disable
+  dir: scripts/migrations

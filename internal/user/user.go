@@ -1,36 +1,21 @@
 package user
 
 import (
-	"book-alloc/db"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"gorm.io/gorm"
 	"time"
 )
 
-const IdentityKey = "email"
-
 type User struct {
 	ID         string
-	Name       string
-	Email      string
-	Password   string
+	Auth0Id    string
 	RegisterAt time.Time
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
 
-func GetAll(c *gin.Context) {
-	db, _ := db.NewDB()
-	var users []User
-	_ = db.Find(&users)
-	c.JSON(http.StatusOK, users)
-}
-
-func GetByEmail(c *gin.Context, email string) (User, error) {
-	db, _ := db.NewDB()
-
+func GetByAuth0Id(db *gorm.DB, auth0Id string) (User, error) {
 	var user User
-	result := db.First(&user, "email = ?", email)
+	result := db.First(&user, "auth0_id = ?", auth0Id)
 
 	return user, result.Error
 }
