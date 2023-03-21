@@ -43,7 +43,7 @@ services:
     ports:
       - '55432:5432'
     healthcheck:
-      test: "pg_isready -U user -d book_alloc || exit 1"
+      test: "pg_isready -U user -d book_alloc_test || exit 1"
       interval: 10s
       timeout: 5s
       retries: 5

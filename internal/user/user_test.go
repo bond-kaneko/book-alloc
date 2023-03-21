@@ -1,16 +1,47 @@
 package user_test
 
 import (
-	"book-alloc/db"
 	"book-alloc/internal/user"
+	"book-alloc/test_db"
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"testing"
 )
 
+func TestCreateUser(t *testing.T) {
+	testDb, _ := test_db.NewTestDB()
+
+	table := []struct {
+		name string
+		User user.User
+	}{
+		{
+			name: "Create",
+			User: user.User{
+				Auth0Id: "NEW_ID",
+				Email:   "test@example.com",
+				Name:    "New User",
+			},
+		},
+	}
+
+	for _, tt := range table {
+		err := user.Create(testDb, tt.User)
+		assert.NoError(t, err)
+
+		u, err := user.GetByAuth0Id(testDb, tt.User.Auth0Id)
+		assert.NoError(t, err)
+		tt.User.ID = u.ID
+		tt.User.RegisteredAt = u.RegisteredAt
+		tt.User.CreatedAt = u.CreatedAt
+		tt.User.UpdatedAt = u.UpdatedAt
+		assert.Equal(t, tt.User, u)
+	}
+}
+
 func TestGetByEmail(t *testing.T) {
-	testDb, _ := db.NewTestDB()
+	testDb, _ := test_db.NewTestDB()
 
 	table := []struct {
 		name     string

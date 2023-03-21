@@ -18,11 +18,6 @@ func NewDB() (*gorm.DB, error) {
 	return gorm.Open(postgres.Open(dsn), &gorm.Config{})
 }
 
-func NewTestDB() (*gorm.DB, error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Tokyo", "test_db", "user", "password", "book_alloc_test", "5432")
-	return gorm.Open(postgres.Open(dsn), &gorm.Config{})
-}
-
 type NullableTime struct {
 	Time  time.Time
 	Valid bool

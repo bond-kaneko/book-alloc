@@ -5,7 +5,7 @@ EXTENSION if not exists pgcrypto;
 drop table if exists users;
 create table users
 (
-    id bigserial not null constraint users_pk primary key,
+    id uuid not null DEFAULT gen_random_uuid() constraint users_pk primary key,
     auth0_id text not null,
     email text not null,
     name text not null,
