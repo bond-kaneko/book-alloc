@@ -1,7 +1,7 @@
 package main
 
 import (
-	"book-alloc/internal/reading_history"
+	v1 "book-alloc/api/v1"
 	"book-alloc/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -27,7 +27,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{os.Getenv("ORIGIN_WEB")},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Authorization"},
+		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc:  nil,
@@ -39,10 +39,13 @@ func main() {
 	})
 
 	auth := r.Group("/auth", adapter.Wrap(middleware.EnsureValidToken()))
-	auth.GET("/ping", func(c *gin.Context) {
-		rh := reading_history.GetAll()
-		c.JSON(http.StatusOK, gin.H{"message": "pong", "reading_histories": rh})
-	})
+	{
+		auth.GET("/ping", func(c *gin.Context) {
+			//rh := reading_history.GetAll()
+			c.JSON(http.StatusOK, gin.H{"message": "pong"})
+		})
+		v1.User(auth)
+	}
 
 	r.Run()
 }

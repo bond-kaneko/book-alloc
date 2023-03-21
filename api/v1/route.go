@@ -8,6 +8,12 @@ import (
 )
 
 func User(r *gin.RouterGroup) {
+	u := r.Group("/users")
+	{
+		u.POST("/login", func(c *gin.Context) {
+			c.JSON(http.StatusOK, "ok")
+		})
+	}
 }
 
 func Allocation(r *gin.RouterGroup) {
