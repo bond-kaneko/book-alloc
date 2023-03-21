@@ -1,7 +1,7 @@
 package main
 
 import (
-	v1 "book-alloc/api/v1"
+	"book-alloc/api/v1"
 	"book-alloc/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -41,7 +41,6 @@ func main() {
 	auth := r.Group("/auth", adapter.Wrap(middleware.EnsureValidToken()))
 	{
 		auth.GET("/ping", func(c *gin.Context) {
-			//rh := reading_history.GetAll()
 			c.JSON(http.StatusOK, gin.H{"message": "pong"})
 		})
 		v1.User(auth)
