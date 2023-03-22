@@ -7,3 +7,8 @@ test:
   dialect: postgres
   datasource: host=test_db user=user dbname=book_alloc_test password=password sslmode=disable
   dir: scripts/migrations
+
+production:
+  dialect: postgres
+  datasource: host=dpg-cgc3ts82qv267ub71o6g-a.singapore-postgres.render.com user=vtpekijg dbname=book_alloc password=ELSN2j9piVPryzdjTMUuH6EiyJIuxRuz
+  dir: scripts/migrations

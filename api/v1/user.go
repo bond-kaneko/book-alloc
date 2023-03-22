@@ -40,7 +40,10 @@ func User(r *gin.RouterGroup) {
 					return
 				}
 
-				u = newUser
+				u, exists = user.GetByAuth0Id(d, request.Auth0Id)
+				if !exists {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve created user"})
+				}
 			}
 
 			c.JSON(http.StatusOK, u)
