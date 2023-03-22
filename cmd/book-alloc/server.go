@@ -1,6 +1,7 @@
 package main
 
 import (
+	"book-alloc/api/v1/allocation"
 	"book-alloc/api/v1/user"
 	"book-alloc/middleware"
 	"github.com/gin-contrib/cors"
@@ -43,7 +44,8 @@ func main() {
 		auth.GET("/ping", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"message": "pong"})
 		})
-		user.User(auth)
+		user.Handle(auth)
+		allocation.Handle(auth)
 	}
 
 	r.Run()

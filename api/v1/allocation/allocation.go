@@ -12,11 +12,13 @@ type CreateRequest struct {
 	IsActive bool
 }
 
-func Create(r *gin.RouterGroup) {
+func Handle(r *gin.RouterGroup) {
 	a := r.Group("/allocations")
 	{
-		a.POST("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, "ok")
-		})
+		a.POST("/", handleCreate)
 	}
+}
+
+func handleCreate(c *gin.Context) {
+	c.JSON(http.StatusOK, "ok")
 }
