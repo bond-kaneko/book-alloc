@@ -23,7 +23,7 @@ func Handle(r *gin.RouterGroup) {
 func handleIdentify(c *gin.Context) {
 	var request IdentifyRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "auth0Id is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
 	d, err := db.NewDB()
@@ -38,6 +38,7 @@ func handleIdentify(c *gin.Context) {
 			Email:   request.Email,
 			Name:    request.Name,
 		}
+		d.Begin()
 		err := user.Create(d, newUser)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
@@ -48,6 +49,7 @@ func handleIdentify(c *gin.Context) {
 		if !exists {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve created user"})
 		}
+		d.Commit()
 	}
 
 	c.JSON(http.StatusOK, u)
