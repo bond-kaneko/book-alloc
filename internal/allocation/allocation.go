@@ -1,9 +1,7 @@
 package allocation
 
 import (
-	"book-alloc/db"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -12,13 +10,11 @@ type Allocation struct {
 	UserId    string
 	Name      string
 	Share     int
+	IsActive  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func GetAll(c *gin.Context) {
-	db, _ := db.NewDB()
-	var allocations []Allocation
-	_ = db.Find(&allocations)
-	c.JSON(http.StatusOK, allocations)
+func Create(db *gorm.DB, allocation Allocation) error {
+	return db.Omit("ID").Create(&allocation).Error
 }

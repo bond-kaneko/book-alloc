@@ -12,11 +12,11 @@ func TestCreateUser(t *testing.T) {
 
 	table := []struct {
 		name string
-		User user.User
+		user user.User
 	}{
 		{
 			name: "Create",
-			User: user.User{
+			user: user.User{
 				Auth0Id: "NEW_ID",
 				Email:   "test@example.com",
 				Name:    "New User",
@@ -25,16 +25,16 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	for _, tt := range table {
-		err := user.Create(testDb, tt.User)
+		err := user.Create(testDb, tt.user)
 		assert.NoError(t, err)
 
-		u, exists := user.GetByAuth0Id(testDb, tt.User.Auth0Id)
+		u, exists := user.GetByAuth0Id(testDb, tt.user.Auth0Id)
 		assert.True(t, exists)
-		tt.User.ID = u.ID
-		tt.User.RegisteredAt = u.RegisteredAt
-		tt.User.CreatedAt = u.CreatedAt
-		tt.User.UpdatedAt = u.UpdatedAt
-		assert.Equal(t, tt.User, u)
+		tt.user.ID = u.ID
+		tt.user.RegisteredAt = u.RegisteredAt
+		tt.user.CreatedAt = u.CreatedAt
+		tt.user.UpdatedAt = u.UpdatedAt
+		assert.Equal(t, tt.user, u)
 	}
 }
 
@@ -50,7 +50,7 @@ func TestGetByEmail(t *testing.T) {
 		{
 			name:     "Users who exist",
 			auth0Id:  "DUMMY_ID",
-			userName: "Test User",
+			userName: "Test user",
 			exists:   true,
 		},
 		{
