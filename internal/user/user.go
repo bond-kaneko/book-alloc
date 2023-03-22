@@ -15,11 +15,10 @@ type User struct {
 	UpdatedAt    time.Time
 }
 
-func GetByAuth0Id(db *gorm.DB, auth0Id string) (User, error) {
-	var user User
-	result := db.First(&user, "auth0_id = ?", auth0Id)
+func GetByAuth0Id(db *gorm.DB, auth0Id string) (user User, exists bool) {
+	result := db.Find(&user, "auth0_id = ?", auth0Id).Limit(1)
 
-	return user, result.Error
+	return user, result.RowsAffected > 0
 }
 
 func Create(db *gorm.DB, user User) error {

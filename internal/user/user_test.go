@@ -3,9 +3,7 @@ package user_test
 import (
 	"book-alloc/internal/user"
 	"book-alloc/test_db"
-	"errors"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"testing"
 )
 
@@ -30,8 +28,8 @@ func TestCreateUser(t *testing.T) {
 		err := user.Create(testDb, tt.User)
 		assert.NoError(t, err)
 
-		u, err := user.GetByAuth0Id(testDb, tt.User.Auth0Id)
-		assert.NoError(t, err)
+		u, exists := user.GetByAuth0Id(testDb, tt.User.Auth0Id)
+		assert.True(t, exists)
 		tt.User.ID = u.ID
 		tt.User.RegisteredAt = u.RegisteredAt
 		tt.User.CreatedAt = u.CreatedAt
@@ -64,8 +62,8 @@ func TestGetByEmail(t *testing.T) {
 	}
 
 	for _, tt := range table {
-		u, err := user.GetByAuth0Id(testDb, tt.auth0Id)
+		u, exists := user.GetByAuth0Id(testDb, tt.auth0Id)
 		assert.Equal(t, tt.userName, u.Name)
-		assert.Equal(t, tt.exists, !errors.Is(err, gorm.ErrRecordNotFound))
+		assert.Equal(t, tt.exists, exists)
 	}
 }
