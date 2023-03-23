@@ -30,3 +30,21 @@ func GetByUserId(d *gorm.DB, userId string) (a []Allocation) {
 	_ = d.Where("user_id = ?", userId).Find(&a)
 	return a
 }
+
+func BulkUpdate(db *gorm.DB, allocations []Allocation) ([]Allocation, error) {
+	var a []Allocation
+	err := db.Transaction(func(tx *gorm.DB) error {
+		for _, allocation := range allocations {
+			result := tx.Model(&a).Where("id =?", allocation.ID).Updates(&allocation)
+			if result.Error != nil {
+				return result.Error
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return allocations, nil
+}

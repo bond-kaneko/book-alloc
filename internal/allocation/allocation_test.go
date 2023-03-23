@@ -69,6 +69,33 @@ func TestGetByUserId(t *testing.T) {
 	}
 }
 
+func TestGetByShare(t *testing.T) {
+	testDb, _ := test_db.New()
+
+	table := []struct {
+		name     string
+		expected allocation.Allocation
+	}{
+		{
+			name: "Get by share",
+			expected: allocation.Allocation{
+				ID:       getFirstId(testDb),
+				UserId:   getAnyUserId(testDb),
+				Name:     "UPDATED_NAME",
+				Share:    99,
+				IsActive: false,
+			},
+		},
+	}
+
+	for _, tt := range table {
+		actual, err := allocation.BulkUpdate(testDb, []allocation.Allocation{tt.expected})
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(actual))
+		assert.Equal(t, tt.expected, actual[0])
+	}
+}
+
 func getLatestByUserId(db *gorm.DB, userId string) (a allocation.Allocation) {
 	db.Omit("ID", "CreatedAt", "UpdatedAt").Where("user_id = ?", userId).Order("created_at desc").Find(&a).Limit(1)
 	return a
@@ -78,6 +105,11 @@ func getAnyUserId(db *gorm.DB) string {
 	var u user.User
 	db.Find(&u).Limit(1)
 	return u.ID
+}
+func getFirstId(db *gorm.DB) int {
+	var a allocation.Allocation
+	db.Find(&a).Order("id asc").Limit(1)
+	return a.ID
 }
 
 func in(key string, list []string) bool {
