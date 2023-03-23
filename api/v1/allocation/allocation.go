@@ -27,6 +27,7 @@ func Handle(r *gin.RouterGroup) {
 	a := r.Group("/allocations")
 	{
 		a.POST("/", handleCreate)
+		a.GET("/:userId", handleGetByUserId)
 	}
 }
 
@@ -55,6 +56,19 @@ func handleCreate(c *gin.Context) {
 		return
 	}
 	dt.Commit()
+
+	c.JSON(http.StatusOK, u)
+}
+
+func handleGetByUserId(c *gin.Context) {
+	d, err := db.NewDB()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.Param("userId")
+	u := allocation.GetByUserId(d, userId)
 
 	c.JSON(http.StatusOK, u)
 }

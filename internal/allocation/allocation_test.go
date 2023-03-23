@@ -10,7 +10,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	testDb, _ := test_db.NewTestDB()
+	testDb, _ := test_db.New()
 
 	table := []struct {
 		name       string
@@ -36,6 +36,39 @@ func TestCreate(t *testing.T) {
 	}
 }
 
+func TestGetByUserId(t *testing.T) {
+	testDb, _ := test_db.New()
+
+	type expected struct {
+		count int
+		names []string
+	}
+
+	table := []struct {
+		name     string
+		userId   string
+		expected expected
+	}{
+		{
+			name:   "Get by user id",
+			userId: getAnyUserId(testDb),
+			expected: expected{
+				count: 2,
+				names: []string{"one", "two"},
+			},
+		},
+	}
+
+	for _, tt := range table {
+		actual := allocation.GetByUserId(testDb, tt.userId)
+		assert.Equal(t, tt.expected.count, len(actual))
+
+		for _, a := range actual {
+			assert.True(t, in(a.Name, tt.expected.names))
+		}
+	}
+}
+
 func getLatestByUserId(db *gorm.DB, userId string) (a allocation.Allocation) {
 	db.Omit("ID", "CreatedAt", "UpdatedAt").Where("user_id = ?", userId).Order("created_at desc").Find(&a).Limit(1)
 	return a
@@ -45,4 +78,13 @@ func getAnyUserId(db *gorm.DB) string {
 	var u user.User
 	db.Find(&u).Limit(1)
 	return u.ID
+}
+
+func in(key string, list []string) bool {
+	for _, e := range list {
+		if key == e {
+			return true
+		}
+	}
+	return false
 }

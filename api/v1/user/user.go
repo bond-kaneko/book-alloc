@@ -7,17 +7,17 @@ import (
 	"net/http"
 )
 
-type IdentifyRequest struct {
-	Auth0Id string
-	Email   string
-	Name    string
-}
-
 func Handle(r *gin.RouterGroup) {
 	u := r.Group("/users")
 	{
 		u.POST("/me", handleIdentify)
 	}
+}
+
+type IdentifyRequest struct {
+	Auth0Id string
+	Email   string
+	Name    string
 }
 
 func handleIdentify(c *gin.Context) {

@@ -20,6 +20,13 @@ func Create(db *gorm.DB, allocation Allocation) error {
 }
 
 func GetLatestByUserId(d *gorm.DB, userId string) (a Allocation, exists bool) {
-	result := d.Find(&a).Limit(1)
+	result := d.Where("user_id = ?", userId).Find(&a).Limit(1)
 	return a, result.RowsAffected > 0
+}
+
+func GetByUserId(d *gorm.DB, userId string) (a []Allocation) {
+	// TODO ページネーション
+	// TODO エラーハンドリング
+	_ = d.Where("user_id = ?", userId).Find(&a)
+	return a
 }

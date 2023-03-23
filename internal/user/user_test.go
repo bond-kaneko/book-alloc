@@ -8,7 +8,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	testDb, _ := test_db.NewTestDB()
+	testDb, _ := test_db.New()
 
 	table := []struct {
 		name string
@@ -39,7 +39,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestGetByEmail(t *testing.T) {
-	testDb, _ := test_db.NewTestDB()
+	testDb, _ := test_db.New()
 
 	table := []struct {
 		name     string
