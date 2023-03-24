@@ -3,6 +3,7 @@ package allocation
 import (
 	"book-alloc/db"
 	"book-alloc/internal/allocation"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -77,7 +78,8 @@ func handleGetByUserId(c *gin.Context) {
 
 type updateAllocation struct {
 	createRequest
-	ID int `json:"ID" binding:"required"`
+	ID        int  `json:"ID" binding:"required"`
+	IsDeleted bool `json:"IsDeleted"`
 }
 
 func (u updateAllocation) toAllocation() allocation.Allocation {
@@ -91,21 +93,10 @@ func (u updateAllocation) toAllocation() allocation.Allocation {
 	}
 }
 
-type updateRequest struct {
-	Data []updateAllocation `json:"data" binding:"required"`
-}
-
-func (er *updateRequest) toAllocations() []allocation.Allocation {
-	a := make([]allocation.Allocation, len(er.Data))
-	for _, alloc := range er.Data {
-		a = append(a, alloc.toAllocation())
-	}
-	return a
-}
-
 func handleUpdate(c *gin.Context) {
-	var request updateRequest
+	var request []updateAllocation
 	if err := c.ShouldBindJSON(&request); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -116,11 +107,24 @@ func handleUpdate(c *gin.Context) {
 		return
 	}
 
-	updated, err := allocation.BulkUpdate(d, request.toAllocations())
+	var forUpdate []allocation.Allocation
+	var forDeleteIds []int
+	for _, alloc := range request {
+		switch {
+		case alloc.IsDeleted:
+			forDeleteIds = append(forDeleteIds, alloc.ID)
+		default:
+			forUpdate = append(forUpdate, alloc.toAllocation())
+		}
+	}
+
+	updated, err := allocation.BulkUpdate(d, forUpdate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	err = allocation.BulkDelete(d, forDeleteIds)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

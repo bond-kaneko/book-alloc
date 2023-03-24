@@ -106,6 +106,7 @@ func getAnyUserId(db *gorm.DB) string {
 	db.Find(&u).Limit(1)
 	return u.ID
 }
+
 func getFirstId(db *gorm.DB) int {
 	var a allocation.Allocation
 	db.Find(&a).Order("id asc").Limit(1)

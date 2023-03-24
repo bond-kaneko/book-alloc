@@ -48,3 +48,7 @@ func BulkUpdate(db *gorm.DB, allocations []Allocation) ([]Allocation, error) {
 
 	return allocations, nil
 }
+
+func BulkDelete(db *gorm.DB, ids []int) error {
+	return db.Where("id in (?)", ids).Delete(&Allocation{}).Error
+}
