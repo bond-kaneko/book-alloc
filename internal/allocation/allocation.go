@@ -35,7 +35,7 @@ func BulkUpdate(db *gorm.DB, allocations []Allocation) ([]Allocation, error) {
 	var a []Allocation
 	err := db.Transaction(func(tx *gorm.DB) error {
 		for _, allocation := range allocations {
-			result := tx.Model(&a).Where("id =?", allocation.ID).Updates(&allocation)
+			result := tx.Select("*").Omit("id").Model(&a).Where("id = ?", allocation.ID).Updates(&allocation)
 			if result.Error != nil {
 				return result.Error
 			}

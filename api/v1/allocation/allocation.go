@@ -22,7 +22,7 @@ type createRequest struct {
 	UserId   string `json:"UserId" binding:"required"`
 	Name     string `json:"Name" binding:"required"`
 	Share    int    `json:"Share" binding:"required"`
-	IsActive bool   `json:"IsActive" binding:"required"`
+	IsActive bool   `json:"IsActive"`
 }
 
 func (cr *createRequest) toAllocation() allocation.Allocation {
