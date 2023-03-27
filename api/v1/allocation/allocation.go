@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -15,6 +16,7 @@ func Handle(r *gin.RouterGroup) {
 		a.POST("/", handleCreate)
 		a.PUT("/", handleUpdate)
 		a.GET("/:userId", handleGetByUserId)
+		a.DELETE("/:allocationId", handleDelete)
 	}
 }
 
@@ -71,8 +73,7 @@ func handleGetByUserId(c *gin.Context) {
 
 type updateAllocation struct {
 	createRequest
-	ID        int  `json:"ID" binding:"required"`
-	IsDeleted bool `json:"IsDeleted"`
+	ID int `json:"ID" binding:"required"`
 }
 
 func (u updateAllocation) toAllocation() allocation.Allocation {
@@ -101,14 +102,8 @@ func handleUpdate(c *gin.Context) {
 	}
 
 	var forUpdate []allocation.Allocation
-	var forDeleteIds []int
-	for _, alloc := range request {
-		switch {
-		case alloc.IsDeleted:
-			forDeleteIds = append(forDeleteIds, alloc.ID)
-		default:
-			forUpdate = append(forUpdate, alloc.toAllocation())
-		}
+	for _, a := range request {
+		forUpdate = append(forUpdate, a.toAllocation())
 	}
 
 	updated, err := allocation.BulkUpdate(d, forUpdate)
@@ -117,11 +112,27 @@ func handleUpdate(c *gin.Context) {
 		return
 	}
 
-	err = allocation.BulkDelete(d, forDeleteIds)
+	c.JSON(http.StatusOK, updated)
+}
+
+func handleDelete(c *gin.Context) {
+	d, err := db.NewDB()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, updated)
+	id, err := strconv.Atoi(c.Param("allocationId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = allocation.Delete(d, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
