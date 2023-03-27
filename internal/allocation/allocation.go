@@ -46,6 +46,5 @@ func BulkUpdate(db *gorm.DB, allocations []Allocation) ([]Allocation, error) {
 }
 
 func Delete(db *gorm.DB, id int) error {
-	// TODO reading_historyごと消す
 	return db.Where("id = ?", id).Delete(&Allocation{}).Error
 }

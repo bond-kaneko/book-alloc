@@ -60,3 +60,7 @@ func Create(db *gorm.DB, book ReadingExperience) (ReadingExperience, error) {
 	err := db.Create(&book).Error
 	return book, err
 }
+
+func DeleteByAllocationId(db *gorm.DB, allocationId int) error {
+	return db.Where("allocation_id = ?", allocationId).Delete(&ReadingExperience{}).Error
+}

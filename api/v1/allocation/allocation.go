@@ -3,6 +3,7 @@ package allocation
 import (
 	"book-alloc/db"
 	"book-alloc/internal/allocation"
+	"book-alloc/internal/reading_experience"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -122,17 +123,27 @@ func handleDelete(c *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(c.Param("allocationId"))
+	allocationId, err := strconv.Atoi(c.Param("allocationId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = allocation.Delete(d, id)
+	tx := d.Begin()
+	err = reading_experience.DeleteByAllocationId(tx, allocationId)
 	if err != nil {
+		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	err = allocation.Delete(tx, allocationId)
+	if err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	tx.Commit()
 
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
