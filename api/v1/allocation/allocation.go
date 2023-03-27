@@ -47,20 +47,13 @@ func handleCreate(c *gin.Context) {
 		return
 	}
 
-	dt := d.Begin()
-	err = allocation.Create(dt, request.toAllocation())
+	alloc, err := allocation.Create(d, request.toAllocation())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	u, exists := allocation.GetLatestByUserId(dt, request.UserId)
-	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	dt.Commit()
 
-	c.JSON(http.StatusOK, u)
+	c.JSON(http.StatusOK, alloc)
 }
 
 func handleGetByUserId(c *gin.Context) {
