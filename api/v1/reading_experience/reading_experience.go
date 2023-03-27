@@ -14,6 +14,7 @@ func Handle(r *gin.RouterGroup) {
 		a.GET("/:userId", HandleMyBooks)
 		a.POST("/", HandleCreate)
 		a.DELETE("/:readingExperienceId", HandleDelete)
+		a.PUT("/", HandleUpdate)
 	}
 }
 
@@ -28,19 +29,14 @@ func HandleMyBooks(c *gin.Context) {
 type CreateRequest struct {
 	AllocationId int    `json:"AllocationId"`
 	Title        string `json:"Title"`
-	Status       string `json:"Status"`
+	Status       int    `json:"Status"`
 }
 
 func (c CreateRequest) toReadingExperience() (reading_experience.ReadingExperience, error) {
-	s, err := reading_experience.FromString(c.Status)
-	if err != nil {
-		return reading_experience.ReadingExperience{}, err
-	}
-
 	return reading_experience.ReadingExperience{
 		AllocationId: c.AllocationId,
 		Title:        c.Title,
-		Status:       s,
+		Status:       reading_experience.Status(c.Status),
 		StartAt:      db.TimePointer(time.Now()),
 	}, nil
 }
@@ -87,4 +83,45 @@ func HandleDelete(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "success"})
+}
+
+type UpdateReadingExperience struct {
+	CreateRequest
+	ID int `json:"id"`
+}
+
+func (c UpdateReadingExperience) toReadingExperience() reading_experience.ReadingExperience {
+	return reading_experience.ReadingExperience{
+		ID:           c.ID,
+		AllocationId: c.AllocationId,
+		Title:        c.Title,
+		Status:       reading_experience.Status(c.Status),
+	}
+}
+
+func HandleUpdate(c *gin.Context) {
+	var request []UpdateReadingExperience
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	d, err := db.NewDB()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	var forUpdate []reading_experience.ReadingExperience
+	for _, r := range request {
+		forUpdate = append(forUpdate, r.toReadingExperience())
+	}
+
+	exps, err := reading_experience.BulkUpdate(d, forUpdate)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, exps)
 }

@@ -68,3 +68,20 @@ func DeleteByAllocationId(db *gorm.DB, allocationId int) error {
 func Delete(db *gorm.DB, readingExperienceId int) error {
 	return db.Where("id =?", readingExperienceId).Delete(&ReadingExperience{}).Error
 }
+
+func BulkUpdate(db *gorm.DB, exps []ReadingExperience) ([]ReadingExperience, error) {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		for _, e := range exps {
+			result := tx.Select("*").Omit("id").Where("id = ?", e.ID).Updates(&e)
+			if result.Error != nil {
+				return result.Error
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return exps, nil
+}
