@@ -52,6 +52,10 @@ func HandleCreate(c *gin.Context) {
 
 	d, _ := db.NewDB()
 	r, err := req.toReadingExperience()
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 	book, err := reading_experience.Create(d, r)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
