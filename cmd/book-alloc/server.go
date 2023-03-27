@@ -2,7 +2,7 @@ package main
 
 import (
 	"book-alloc/api/v1/allocation"
-	"book-alloc/api/v1/book"
+	"book-alloc/api/v1/reading_experience"
 	"book-alloc/api/v1/user"
 	"book-alloc/middleware"
 	"github.com/gin-contrib/cors"
@@ -47,7 +47,7 @@ func main() {
 		})
 		user.Handle(auth)
 		allocation.Handle(auth)
-		book.Handle(auth)
+		reading_experience.Handle(auth)
 	}
 
 	r.Run()

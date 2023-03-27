@@ -52,7 +52,7 @@ services:
     image: node:19.7.0
     tty: true
     volumes:
-      - ../book-alloc-web:/src
+      - ../reading_experience-alloc-web:/src
     environment:
       HOST: 0.0.0.0
     working_dir: /src

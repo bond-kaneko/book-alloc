@@ -34,3 +34,7 @@ func (nt *NullableTime) Value() (driver.Value, error) {
 	}
 	return nt.Time, nil
 }
+
+func TimePointer(t time.Time) *time.Time {
+	return &t
+}

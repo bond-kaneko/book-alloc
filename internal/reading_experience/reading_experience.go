@@ -1,7 +1,8 @@
-package book
+package reading_experience
 
 import (
 	"book-alloc/internal/allocation"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -15,7 +16,21 @@ const (
 	Stash
 )
 
-type Book struct {
+func FromString(value string) (Status, error) {
+	switch value {
+	case "Want":
+		return Want, nil
+	case "Reading":
+		return Reading, nil
+	case "Complete":
+		return Complete, nil
+	case "Stash":
+		return Stash, nil
+	}
+	return 0, errors.New("Non-existent status")
+}
+
+type ReadingExperience struct {
 	ID           int
 	AllocationId int
 	Title        string
@@ -26,7 +41,7 @@ type Book struct {
 	UpdatedAt    *time.Time
 }
 
-func GetMyBooks(db *gorm.DB, userId string) []Book {
+func GetMine(db *gorm.DB, userId string) []ReadingExperience {
 	var allocations []allocation.Allocation
 	_ = db.Where("user_id = ?", userId).Find(&allocations)
 
@@ -35,8 +50,13 @@ func GetMyBooks(db *gorm.DB, userId string) []Book {
 		allocationIds = append(allocationIds, a.ID)
 	}
 
-	var books []Book
+	var books []ReadingExperience
 	_ = db.Where("allocation_id in ?", allocationIds).Find(&books)
 
 	return books
+}
+
+func Create(db *gorm.DB, book ReadingExperience) (ReadingExperience, error) {
+	err := db.Create(&book).Error
+	return book, err
 }
