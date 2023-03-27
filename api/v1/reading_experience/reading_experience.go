@@ -4,6 +4,7 @@ import (
 	"book-alloc/db"
 	"book-alloc/internal/reading_experience"
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"time"
 )
 
@@ -12,6 +13,7 @@ func Handle(r *gin.RouterGroup) {
 	{
 		a.GET("/:userId", HandleMyBooks)
 		a.POST("/", HandleCreate)
+		a.DELETE("/:readingExperienceId", HandleDelete)
 	}
 }
 
@@ -63,4 +65,26 @@ func HandleCreate(c *gin.Context) {
 	}
 
 	c.JSON(200, book)
+}
+
+func HandleDelete(c *gin.Context) {
+	reId, err := strconv.Atoi(c.Param("readingExperienceId"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	d, err := db.NewDB()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = reading_experience.Delete(d, reId)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "success"})
 }
