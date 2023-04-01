@@ -2,7 +2,6 @@ package allocation
 
 import (
 	"book-alloc/db"
-	"book-alloc/internal/allocation"
 	"book-alloc/internal/reading_experience"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -18,6 +17,7 @@ func Handle(r *gin.RouterGroup) {
 		a.PUT("/", handleUpdate)
 		a.GET("/:userId", handleGetByUserId)
 		a.DELETE("/:allocationId", handleDelete)
+		a.GET("/:userId/summary", HandleSummary)
 	}
 }
 
@@ -28,8 +28,8 @@ type createRequest struct {
 	IsActive bool   `json:"IsActive"`
 }
 
-func (cr *createRequest) toAllocation() allocation.Allocation {
-	return allocation.Allocation{
+func (cr *createRequest) toAllocation() Allocation {
+	return Allocation{
 		UserId:   cr.UserId,
 		Name:     cr.Name,
 		Share:    cr.Share,
@@ -50,7 +50,7 @@ func handleCreate(c *gin.Context) {
 		return
 	}
 
-	alloc, err := allocation.Create(d, request.toAllocation())
+	alloc, err := Create(d, request.toAllocation())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -67,7 +67,7 @@ func handleGetByUserId(c *gin.Context) {
 	}
 
 	userId := c.Param("userId")
-	u := allocation.GetByUserId(d, userId)
+	u := GetByUserId(d, userId)
 
 	c.JSON(http.StatusOK, u)
 }
@@ -77,8 +77,8 @@ type updateAllocation struct {
 	ID int `json:"ID" binding:"required"`
 }
 
-func (u updateAllocation) toAllocation() allocation.Allocation {
-	return allocation.Allocation{
+func (u updateAllocation) toAllocation() Allocation {
+	return Allocation{
 		ID:        u.ID,
 		UserId:    u.UserId,
 		Name:      u.Name,
@@ -102,12 +102,12 @@ func handleUpdate(c *gin.Context) {
 		return
 	}
 
-	var forUpdate []allocation.Allocation
+	var forUpdate []Allocation
 	for _, a := range request {
 		forUpdate = append(forUpdate, a.toAllocation())
 	}
 
-	updated, err := allocation.BulkUpdate(d, forUpdate)
+	updated, err := BulkUpdate(d, forUpdate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -137,7 +137,7 @@ func handleDelete(c *gin.Context) {
 		return
 	}
 
-	err = allocation.Delete(tx, allocationId)
+	err = Delete(tx, allocationId)
 	if err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -146,4 +146,21 @@ func handleDelete(c *gin.Context) {
 	tx.Commit()
 
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
+func HandleSummary(c *gin.Context) {
+	d, err := db.NewDB()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.Param("userId")
+	countForAllocationId, err := GetReadingExperienceCountForEachAllocation(d, userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, countForAllocationId)
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"book-alloc/api/v1/allocation"
-	"book-alloc/api/v1/reading_experience"
-	"book-alloc/api/v1/user"
+	"book-alloc/internal/allocation"
+	"book-alloc/internal/reading_experience"
+	"book-alloc/internal/user"
 	"book-alloc/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

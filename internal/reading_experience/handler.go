@@ -2,7 +2,6 @@ package reading_experience
 
 import (
 	"book-alloc/db"
-	"book-alloc/internal/reading_experience"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -22,7 +21,7 @@ func HandleMyBooks(c *gin.Context) {
 	userId := c.Param("userId")
 	d, _ := db.NewDB()
 
-	mine := reading_experience.GetMine(d, userId)
+	mine := GetMine(d, userId)
 	c.JSON(200, mine)
 }
 
@@ -32,11 +31,11 @@ type CreateRequest struct {
 	Status       int    `json:"Status"`
 }
 
-func (c CreateRequest) toReadingExperience() (reading_experience.ReadingExperience, error) {
-	return reading_experience.ReadingExperience{
+func (c CreateRequest) toReadingExperience() (ReadingExperience, error) {
+	return ReadingExperience{
 		AllocationId: c.AllocationId,
 		Title:        c.Title,
-		Status:       reading_experience.Status(c.Status),
+		Status:       Status(c.Status),
 		StartAt:      db.TimePointer(time.Now()),
 	}, nil
 }
@@ -54,7 +53,7 @@ func HandleCreate(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	book, err := reading_experience.Create(d, r)
+	book, err := Create(d, r)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -76,7 +75,7 @@ func HandleDelete(c *gin.Context) {
 		return
 	}
 
-	err = reading_experience.Delete(d, reId)
+	err = Delete(d, reId)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -90,12 +89,12 @@ type UpdateReadingExperience struct {
 	ID int `json:"id"`
 }
 
-func (c UpdateReadingExperience) toReadingExperience() reading_experience.ReadingExperience {
-	return reading_experience.ReadingExperience{
+func (c UpdateReadingExperience) toReadingExperience() ReadingExperience {
+	return ReadingExperience{
 		ID:           c.ID,
 		AllocationId: c.AllocationId,
 		Title:        c.Title,
-		Status:       reading_experience.Status(c.Status),
+		Status:       Status(c.Status),
 	}
 }
 
@@ -112,12 +111,12 @@ func HandleUpdate(c *gin.Context) {
 		return
 	}
 
-	var forUpdate []reading_experience.ReadingExperience
+	var forUpdate []ReadingExperience
 	for _, r := range request {
 		forUpdate = append(forUpdate, r.toReadingExperience())
 	}
 
-	exps, err := reading_experience.BulkUpdate(d, forUpdate)
+	exps, err := BulkUpdate(d, forUpdate)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

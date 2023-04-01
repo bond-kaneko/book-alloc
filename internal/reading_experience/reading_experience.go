@@ -1,7 +1,7 @@
 package reading_experience
 
 import (
-	"book-alloc/internal/allocation"
+	"fmt"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"time"
@@ -42,16 +42,11 @@ type ReadingExperience struct {
 }
 
 func GetMine(db *gorm.DB, userId string) []ReadingExperience {
-	var allocations []allocation.Allocation
-	_ = db.Where("user_id = ?", userId).Find(&allocations)
-
-	var allocationIds []int
-	for _, a := range allocations {
-		allocationIds = append(allocationIds, a.ID)
-	}
+	var aIds []int
+	_ = db.Select("allocation_id").Where("user_id = ?", userId).Find(&aIds)
 
 	var books []ReadingExperience
-	_ = db.Where("allocation_id in ?", allocationIds).Find(&books)
+	_ = db.Where("allocation_id in ?", aIds).Find(&books)
 
 	return books
 }
@@ -59,6 +54,31 @@ func GetMine(db *gorm.DB, userId string) []ReadingExperience {
 func Create(db *gorm.DB, book ReadingExperience) (ReadingExperience, error) {
 	err := db.Create(&book).Error
 	return book, err
+}
+
+func GetCountForEachAllocationId(db *gorm.DB, allocationIds []int) (map[int]int, error) {
+	type result struct {
+		AllocationId int
+		Count        int
+	}
+	var res []result
+	d := db.Raw(`
+		SELECT allocation_id, count(id) as count
+		FROM reading_experiences
+		WHERE allocation_id IN (?)
+		GROUP BY "allocation_id"`, allocationIds).
+		Scan(&res)
+	if d.Error != nil {
+		return nil, d.Error
+	}
+	fmt.Println(res)
+
+	countForAllocationId := make(map[int]int)
+	for _, r := range res {
+		countForAllocationId[r.AllocationId] = r.Count
+	}
+
+	return countForAllocationId, nil
 }
 
 func DeleteByAllocationId(db *gorm.DB, allocationId int) error {
