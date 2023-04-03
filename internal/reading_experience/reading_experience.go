@@ -43,7 +43,13 @@ type ReadingExperience struct {
 
 func GetMine(db *gorm.DB, userId string) []ReadingExperience {
 	var aIds []int
-	_ = db.Select("allocation_id").Where("user_id = ?", userId).Find(&aIds)
+	db.Model(&ReadingExperience{}).
+		Raw(`
+			SELECT id 
+			FROM allocations
+			WHERE user_id = ?
+		`, userId).
+		Scan(&aIds)
 
 	var books []ReadingExperience
 	_ = db.Where("allocation_id in ?", aIds).Find(&books)
