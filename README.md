@@ -5,6 +5,8 @@
 読書ポートフォリオマネジメントツールです。
 
 どういうカテゴリの本を読んだのかではなく、自分にとってどんな意味を持つ本を読んだのか、を記録するサービスです。
+
+イメージ画像
 <img width="1430" alt="スクリーンショット 2023-04-03 22 40 23" src="https://user-images.githubusercontent.com/20700893/229527123-9dbade20-2e97-4bc3-9502-59a40df113b0.png">
 
 ## Init
@@ -35,3 +37,13 @@ https://github.com/bond-kaneko/book-alloc
   - vue-router 4
   
 https://github.com/bond-kaneko/book-alloc-web
+
+## Prod
+
+[Render.com](https://render.com/) でホスティングしています。
+
+認証はAuth0を使用していて、本番環境ではテストアカウントを用意しています。
+
+email: book-alloc@example.com
+
+password: b00k-a110c
