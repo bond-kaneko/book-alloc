@@ -56,3 +56,4 @@ password: b00k-a110c
 - [ログインユーザー](https://book-alloc-web.onrender.com/users)
 - [本のカテゴリ一覧](https://book-alloc-web.onrender.com/allocations)
 - [読書履歴一覧](https://book-alloc-web.onrender.com/reading-experiences/mine)
+- [カテゴリごとの読書数](https://book-alloc-web.onrender.com/allocations/summary)

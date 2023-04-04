@@ -1,7 +1,6 @@
 package reading_experience
 
 import (
-	"fmt"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"time"
@@ -77,7 +76,6 @@ func GetCountForEachAllocationId(db *gorm.DB, allocationIds []int) (map[int]int,
 	if d.Error != nil {
 		return nil, d.Error
 	}
-	fmt.Println(res)
 
 	countForAllocationId := make(map[int]int)
 	for _, r := range res {

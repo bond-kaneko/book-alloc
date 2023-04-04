@@ -1,7 +1,6 @@
 package allocation
 
 import (
-	"book-alloc/internal/reading_experience"
 	"gorm.io/gorm"
 	"time"
 )
@@ -48,17 +47,4 @@ func BulkUpdate(db *gorm.DB, allocations []Allocation) ([]Allocation, error) {
 
 func Delete(db *gorm.DB, id int) error {
 	return db.Where("id = ?", id).Delete(&Allocation{}).Error
-}
-
-func GetReadingExperienceCountForEachAllocation(db *gorm.DB, userId string) (map[int]int, error) {
-	var ids []int
-	allocations := GetByUserId(db, userId)
-	for _, a := range allocations {
-		ids = append(ids, a.ID)
-	}
-	counts, err := reading_experience.GetCountForEachAllocationId(db, ids)
-	if err != nil {
-		return nil, err
-	}
-	return counts, nil
 }

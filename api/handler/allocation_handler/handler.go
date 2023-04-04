@@ -157,7 +157,12 @@ func HandleSummary(c *gin.Context) {
 	}
 
 	userId := c.Param("userId")
-	countForAllocationId, err := allocation.GetReadingExperienceCountForEachAllocation(d, userId)
+	allocations := allocation.GetByUserId(d, userId)
+	var allocationIds []int
+	for _, a := range allocations {
+		allocationIds = append(allocationIds, a.ID)
+	}
+	countForAllocationId, err := reading_experience.GetCountForEachAllocationId(d, allocationIds)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
