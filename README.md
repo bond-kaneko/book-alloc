@@ -47,3 +47,12 @@ https://github.com/bond-kaneko/book-alloc-web
 email: book-alloc@example.com
 
 password: b00k-a110c
+
+### Route
+
+以下の画面があります。フォームにstyleを当てていなかったり、JSONをそのまま表示したりしているので、現状ではAPIの動作確認くらいの役割です。
+- [ログイン](https://book-alloc-web.onrender.com/login)
+- [ログアウト](https://book-alloc-web.onrender.com/logout)
+- [ログインユーザー](https://book-alloc-web.onrender.com/users)
+- [本のカテゴリ一覧](https://book-alloc-web.onrender.com/allocations)
+- [読書履歴一覧](https://book-alloc-web.onrender.com/reading-experiences/mine)
