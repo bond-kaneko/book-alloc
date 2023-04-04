@@ -1,13 +1,14 @@
-package reading_experience
+package reading_experience_handler
 
 import (
 	"book-alloc/db"
+	"book-alloc/internal/reading_experience"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
 )
 
-func Handle(r *gin.RouterGroup) {
+func Routes(r *gin.RouterGroup) {
 	a := r.Group("/reading-experiences")
 	{
 		a.GET("/:userId", HandleMyBooks)
@@ -21,7 +22,7 @@ func HandleMyBooks(c *gin.Context) {
 	userId := c.Param("userId")
 	d, _ := db.NewDB()
 
-	mine := GetMine(d, userId)
+	mine := reading_experience.GetMine(d, userId)
 	c.JSON(200, mine)
 }
 
@@ -31,11 +32,11 @@ type CreateRequest struct {
 	Status       int    `json:"Status"`
 }
 
-func (c CreateRequest) toReadingExperience() (ReadingExperience, error) {
-	return ReadingExperience{
+func (c CreateRequest) toReadingExperience() (reading_experience.ReadingExperience, error) {
+	return reading_experience.ReadingExperience{
 		AllocationId: c.AllocationId,
 		Title:        c.Title,
-		Status:       Status(c.Status),
+		Status:       reading_experience.Status(c.Status),
 		StartAt:      db.TimePointer(time.Now()),
 	}, nil
 }
@@ -53,7 +54,7 @@ func HandleCreate(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	book, err := Create(d, r)
+	book, err := reading_experience.Create(d, r)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -75,7 +76,7 @@ func HandleDelete(c *gin.Context) {
 		return
 	}
 
-	err = Delete(d, reId)
+	err = reading_experience.Delete(d, reId)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -89,12 +90,12 @@ type UpdateReadingExperience struct {
 	ID int `json:"id"`
 }
 
-func (c UpdateReadingExperience) toReadingExperience() ReadingExperience {
-	return ReadingExperience{
+func (c UpdateReadingExperience) toReadingExperience() reading_experience.ReadingExperience {
+	return reading_experience.ReadingExperience{
 		ID:           c.ID,
 		AllocationId: c.AllocationId,
 		Title:        c.Title,
-		Status:       Status(c.Status),
+		Status:       reading_experience.Status(c.Status),
 	}
 }
 
@@ -111,12 +112,12 @@ func HandleUpdate(c *gin.Context) {
 		return
 	}
 
-	var forUpdate []ReadingExperience
+	var forUpdate []reading_experience.ReadingExperience
 	for _, r := range request {
 		forUpdate = append(forUpdate, r.toReadingExperience())
 	}
 
-	exps, err := BulkUpdate(d, forUpdate)
+	exps, err := reading_experience.BulkUpdate(d, forUpdate)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
